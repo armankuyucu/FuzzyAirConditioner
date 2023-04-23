@@ -1,100 +1,80 @@
-very_cold = 0
-cold = 0
-warm = 0
-hot = 0
-very_hot = 0
+very_cold, cold, warm, hot, very_hot = 0, 0, 0, 0, 0
+dry, medium, wet = 0, 0, 0
+slow, normal, fast = 0, 0, 0
 
-dry = 0
-medium = 0
-wet = 0
+try:
+    room_temperature = float(input("room temperature: "))
+    humidity = float(input("humidity: "))
+except ValueError as e:
+    print("Invalid input:", e)
+    exit()
 
-slow = 0
-normal = 0
-fast = 0
-
-negative_slope = -1 / 10
-positive_slope = 1 / 10
-
-room_temperature = float(input("room temperature: "))
-humidity = float(input("humidity: "))
-
+# Check if inputs are valid
 while humidity < 0 or humidity > 100:
+    print("Humidity must be between 0 and 100, please try again")
     humidity = float(input("humidity: "))
 
-# Calculate membership values for room temperature
 
+def calculate_line_equation(first_point: tuple, second_point: tuple, x: float):
+    """ Calculate line equation using two points
+    :param first_point: tuple of x and y coordinates of first point
+    :param second_point: tuple of x and y coordinates of second point
+    :param x:   x coordinate of point to calculate
+    :return: calculated y coordinate """
+    m = (second_point[1] - first_point[1]) / (second_point[0] - first_point[0])
+    b = first_point[1] - m * first_point[0]
+    return m * x + b
+
+
+# Calculate membership values for room temperature
 if room_temperature <= 0:
-    very_cold = 1
-    cold = 0
-    warm = 0
-    hot = 0
-    very_hot = 0
+    very_cold, cold, warm, hot, very_hot = 1, 0, 0, 0, 0
 
 elif 0 < room_temperature <= 10:
-    very_cold = negative_slope * room_temperature + 1
-    cold = positive_slope * room_temperature
-    warm = 0
-    hot = 0
-    very_hot = 0
+    very_cold = calculate_line_equation((0, 1), (10, 0), room_temperature)  # negative_slope * room_temperature + 1
+    cold = calculate_line_equation((0, 0), (10, 1), room_temperature)  # positive_slope * room_temperature
+    warm, hot, very_hot = 0, 0, 0
 
 elif 10 < room_temperature <= 20:
-    cold = negative_slope * room_temperature + 2
-    warm = positive_slope * room_temperature - 1
-    very_cold = 0
-    hot = 0
-    very_hot = 0
+    cold = calculate_line_equation((10, 1), (20, 0), room_temperature)  # negative_slope * room_temperature + 2
+    warm = calculate_line_equation((10, 0), (20, 1), room_temperature)  # positive_slope * room_temperature - 1
+    very_cold, hot, very_hot = 0, 0, 0
 
 elif 20 < room_temperature <= 30:
-    warm = negative_slope * room_temperature + 3
-    hot = positive_slope * room_temperature - 2
-    very_cold = 0
-    cold = 0
-    very_hot = 0
+    warm = calculate_line_equation((20, 1), (30, 0), room_temperature)  # negative_slope * room_temperature + 3
+    hot = calculate_line_equation((20, 0), (30, 1), room_temperature)  # positive_slope * room_temperature - 2
+    very_cold, cold, very_hot = 0, 0, 0
 
 elif 30 < room_temperature <= 40:
-    hot = negative_slope * room_temperature + 4
-    very_hot = positive_slope * room_temperature - 3
-    very_cold = 0
-    cold = 0
-    warm = 0
+    hot = calculate_line_equation((30, 1), (40, 0), room_temperature)  # negative_slope * room_temperature + 4
+    very_hot = calculate_line_equation((30, 0), (40, 1), room_temperature)  # positive_slope * room_temperature - 3
+    very_cold, cold, warm = 0, 0, 0
 
 elif room_temperature > 40:
-    very_hot = 1
-    very_cold = 0
-    cold = 0
-    warm = 0
-    hot = 0
+    very_cold, cold, warm, hot, very_hot = 0, 0, 0, 0, 1
 
 # Calculate membership values for humidity
-
 if humidity <= 40:
-    dry = 1
-    medium = 0
-    wet = 0
+    dry, medium, wet = 1, 0, 0
 
 elif 40 < humidity <= 50:
-    dry = negative_slope * humidity + 5
-    medium = positive_slope * humidity - 4
+    dry = calculate_line_equation((40, 1), (50, 0), humidity)  # negative_slope * humidity + 5
+    medium = calculate_line_equation((40, 0), (50, 1), humidity)  # positive_slope * humidity - 4
     wet = 0
 
 elif 50 < humidity < 70:
-    dry = 0
-    medium = 1
-    wet = 0
+    dry, medium, wet = 0, 1, 0
 
 elif 70 < humidity <= 80:
     dry = 0
-    medium = negative_slope * humidity + 8
-    wet = positive_slope * humidity - 7
+    medium = calculate_line_equation((70, 1), (80, 0), humidity)  # negative_slope * humidity + 7
+    wet = calculate_line_equation((70, 0), (80, 1), humidity)  # positive_slope * humidity - 7
 
 elif humidity > 80:
-    dry = 0
-    medium = 0
-    wet = 1
+    dry, medium, wet = 0, 0, 1
 
 
-# Defining rules
-
+# Define rules
 def rule1():
     if very_cold != 0 and dry != 0:
         print("rule1")
@@ -185,6 +165,7 @@ def rule13():
         return min(very_hot, dry)
     return 0
 
+
 def rule14():
     if very_hot != 0 and medium != 0:
         print("rule14")
@@ -201,7 +182,8 @@ def rule15():
 
 # Define the Sugeno inference system
 def sugeno():
-    numerator = rule1() * output_membership(rule1()) + rule2() * output_membership(rule2()) + rule3() * output_membership(
+    numerator = rule1() * output_membership(rule1()) + rule2() * output_membership(
+        rule2()) + rule3() * output_membership(
         rule3()) + rule4() * output_membership(rule4()) + rule5() * output_membership(
         rule5()) + rule6() * output_membership(rule6()) + rule7() * output_membership(
         rule7()) + rule8() * output_membership(rule8()) + rule9() * output_membership(
