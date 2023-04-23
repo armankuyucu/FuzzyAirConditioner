@@ -3,8 +3,8 @@ dry, medium, wet = 0, 0, 0
 slow, normal, fast = 0, 0, 0
 
 try:
-    room_temperature = float(input("room temperature: "))
-    humidity = float(input("humidity: "))
+    room_temperature = float(input("room temperature °C: "))
+    humidity = float(input("humidity %: "))
 except ValueError as e:
     print("Invalid input:", e)
     exit()
@@ -54,150 +54,128 @@ elif room_temperature > 40:
     very_cold, cold, warm, hot, very_hot = 0, 0, 0, 0, 1
 
 # Calculate membership values for humidity
-if humidity <= 40:
-    dry, medium, wet = 1, 0, 0
 
-elif 40 < humidity <= 50:
-    dry = calculate_line_equation((40, 1), (50, 0), humidity)  # negative_slope * humidity + 5
-    medium = calculate_line_equation((40, 0), (50, 1), humidity)  # positive_slope * humidity - 4
+if 0 <= humidity <= 50:
+    dry = calculate_line_equation((0, 1), (50, 0), humidity)
+    medium = calculate_line_equation((0, 0), (50, 1), humidity)
     wet = 0
 
-elif 50 < humidity < 70:
-    dry, medium, wet = 0, 1, 0
-
-elif 70 < humidity <= 80:
+elif 50 < humidity <= 100:
     dry = 0
-    medium = calculate_line_equation((70, 1), (80, 0), humidity)  # negative_slope * humidity + 7
-    wet = calculate_line_equation((70, 0), (80, 1), humidity)  # positive_slope * humidity - 7
-
-elif humidity > 80:
-    dry, medium, wet = 0, 0, 1
+    medium = calculate_line_equation((50, 1), (100, 0), humidity)
+    wet = calculate_line_equation((50, 0), (100, 1), humidity)
 
 
 # Define rules
-def rule1():
-    if very_cold != 0 and dry != 0:
-        print("rule1")
-        return min(very_cold, dry)
+def fuzzy_rule(temperature_membership: float, humidity_membership: float):
+    """ Calculate the fuzzy rule
+    :param temperature_membership: membership value of room temperature
+    :param humidity_membership: membership value of humidity
+    :return: minimum of temperature and humidity membership values or 0 if one of them is 0 """
+    print(temperature_membership, ",", humidity_membership, "\n-----\n")
+    if temperature_membership != 0 and humidity_membership != 0:
+        return min(temperature_membership, humidity_membership)
     return 0
+
+
+def rule1():
+    print("-----\n rule1")
+    return fuzzy_rule(very_cold, dry)
 
 
 def rule2():
-    if very_cold != 0 and medium != 0:
-        print("rule2")
-        return min(very_cold, medium)
-    return 0
+    print("-----\n rule2")
+    return fuzzy_rule(very_cold, medium)
 
 
 def rule3():
-    if very_cold != 0 and wet != 0:
-        print("rule3")
-        return min(very_cold, wet)
-    return 0
+    print("-----\n rule3")
+    return fuzzy_rule(very_cold, wet)
 
 
 def rule4():
-    if cold != 0 and dry != 0:
-        print("rule4")
-        return min(cold, dry)
-    return 0
+    print("-----\n rule4")
+    return fuzzy_rule(cold, dry)
 
 
 def rule5():
-    if cold != 0 and medium != 0:
-        print("rule5")
-        return min(cold, medium)
-    return 0
+    print("-----\n rule5")
+    return fuzzy_rule(cold, medium)
 
 
 def rule6():
-    if cold != 0 and wet != 0:
-        print("rule6")
-        return min(cold, wet)
-    return 0
+    print("-----\n rule6")
+    return fuzzy_rule(cold, wet)
 
 
 def rule7():
-    if warm != 0 and dry != 0:
-        print("rule7")
-        return min(warm, dry)
-    return 0
+    print("-----\n rule7")
+    return fuzzy_rule(warm, dry)
 
 
 def rule8():
-    if warm != 0 and medium != 0:
-        print("rule8")
-        return min(warm, medium)
-    return 0
+    print("-----\n rule8")
+    return fuzzy_rule(warm, medium)
 
 
 def rule9():
-    if warm != 0 and wet != 0:
-        print("rule9")
-        return min(warm, wet)
-    return 0
+    print("-----\n rule9")
+    return fuzzy_rule(warm, wet)
 
 
 def rule10():
-    if hot != 0 and dry != 0:
-        print("rule10")
-        return min(hot, dry)
-    return 0
+    print("-----\n rule10")
+    return fuzzy_rule(hot, dry)
 
 
 def rule11():
-    if hot != 0 and medium != 0:
-        print("rule11")
-        return min(hot, medium)
-    return 0
+    print("-----\n rule11")
+    return fuzzy_rule(hot, medium)
 
 
 def rule12():
-    if hot != 0 and wet != 0:
-        print("rule12")
-        return min(hot, wet)
-    return 0
+    print("-----\n rule12")
+    return fuzzy_rule(hot, wet)
 
 
 def rule13():
-    if very_hot != 0 and dry != 0:
-        print("rule13")
-        return min(very_hot, dry)
-    return 0
+    print("-----\n rule13")
+    return fuzzy_rule(very_hot, dry)
 
 
 def rule14():
-    if very_hot != 0 and medium != 0:
-        print("rule14")
-        return min(very_hot, medium)
-    return 0
+    print("-----\n rule14")
+    return fuzzy_rule(very_hot, medium)
 
 
 def rule15():
-    if very_hot != 0 and wet != 0:
-        print("rule15")
-        return min(very_hot, wet)
-    return 0
+    print("-----\n rule15")
+    return fuzzy_rule(very_hot, wet)
 
 
-# Define the Sugeno inference system
 def sugeno():
-    numerator = rule1() * output_membership(rule1()) + rule2() * output_membership(
-        rule2()) + rule3() * output_membership(
-        rule3()) + rule4() * output_membership(rule4()) + rule5() * output_membership(
-        rule5()) + rule6() * output_membership(rule6()) + rule7() * output_membership(
-        rule7()) + rule8() * output_membership(rule8()) + rule9() * output_membership(
-        rule9()) + rule10() * output_membership(rule10()) + rule11() * output_membership(
-        rule11()) + rule12() * output_membership(rule12()) + rule13() * output_membership(
-        rule13()) + rule14() * output_membership(
-        rule14()) + rule15() * output_membership(rule15())
+    """ Calculate the Sugeno inference system """
+    numerator = rule1() * output_membership(rule1()) + \
+                rule2() * output_membership(rule2()) + \
+                rule3() * output_membership(rule3()) + \
+                rule4() * output_membership(rule4()) + \
+                rule5() * output_membership(rule5()) + \
+                rule6() * output_membership(rule6()) + \
+                rule7() * output_membership(rule7()) + \
+                rule8() * output_membership(rule8()) + \
+                rule9() * output_membership(rule9()) + \
+                rule10() * output_membership(rule10()) + \
+                rule11() * output_membership(rule11()) + \
+                rule12() * output_membership(rule12()) + \
+                rule13() * output_membership(rule13()) + \
+                rule14() * output_membership(rule14()) + \
+                rule15() * output_membership(rule15())
+
     denominator = rule1() + rule2() + rule3() + rule4() + rule5() + rule6() + rule7() + rule8() + rule9() + rule10() + rule11() + rule12() + rule13() + rule14() + rule15()
     return numerator / denominator
 
 
 def output_membership(x):
-    if x is None:
-        return 0
     if x <= 0.2:
         return 20
     elif 0.2 < x <= 0.4:
@@ -211,4 +189,4 @@ def output_membership(x):
 
 
 output = sugeno()
-print(output)
+print("fan speed:", output)
