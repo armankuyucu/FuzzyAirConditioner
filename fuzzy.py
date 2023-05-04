@@ -52,8 +52,19 @@ fuzzy_ctrl = ctrl.ControlSystem(
     rules=[rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8, rule9, rule10, rule11, rule12, rule13, rule14, rule15])
 fuzzy_system = ctrl.ControlSystemSimulation(fuzzy_ctrl)
 
-fuzzy_system.input['temp'] = float(input('Room temperature: '))
-fuzzy_system.input['humidity'] = float(input('Humidity: '))
+room_temp = float(input('Room temperature: '))
+while not -100 <= room_temp <= 100:
+    print('Room temperature must be between -100 and 100!')
+    room_temp = float(input('Room temperature: '))
+
+humidity = float(input('Humidity: '))
+while not 0 <= humidity <= 100:
+    print('Humidity must be between 0 and 100!')
+    humidity = float(input('Humidity: '))
+
+fuzzy_system.input['humidity'] = humidity
+fuzzy_system.input['temp'] = room_temp
+
 
 # Compute the fuzzy system
 fuzzy_system.compute()
